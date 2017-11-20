@@ -1,0 +1,202 @@
+<html lang="en"><head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Admin panel - y91036d3.beget.tech</title>		
+		<link href="http://y91036d3.beget.tech/template/css/bootstrap.min.new.css" rel="stylesheet">
+		<link href="http://y91036d3.beget.tech/template/css/font-awesome.min.css" rel="stylesheet">
+		<link href="http://y91036d3.beget.tech/template/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+		<link href="http://y91036d3.beget.tech/template/css/mineNew.css?v=5" rel="stylesheet">
+		<link id="style" href="" rel="stylesheet">
+
+		<link rel="shortcut icon" href="favicon.ico">
+
+		<script src="http://y91036d3.beget.tech/template/js/jquery-1.11.1.min.js"></script>
+		<script src="http://y91036d3.beget.tech/template/js/jquery.cookie.js"></script>
+		<script src="http://y91036d3.beget.tech/template/js/bootstrap.min.js"></script>
+		<script src="http://y91036d3.beget.tech/template/js/bootbox.min.js"></script>
+		<script src="http://y91036d3.beget.tech/template/js/jquery.dataTables.min.js"></script>
+		<script src="http://y91036d3.beget.tech/template/js/dataTables.bootstrap.js"></script>
+		<script src="http://y91036d3.beget.tech/template/js/tinysort.js"></script>
+		<script src="http://y91036d3.beget.tech/template/js/expanding.js"></script>
+		<script src="http://y91036d3.beget.tech/template/js/theme.js"></script>
+		<?php include "Templates/Settings.php"; ?>
+		<style>
+        textarea{
+            margin-bottom: 5px;
+        }
+        .panel-body .alert:last-child{
+            margin-bottom: 0px;
+        }
+        .bubble{
+            margin-bottom: 5px !important;
+        }
+		
+		</style>
+		<script type="text/javascript">
+            var reload = true;
+            $(document).ready(function(){
+                $(".support_button").on("click",function(){
+                    var tid = $(this).data("x");
+                    var body = $("#text"+tid).val();
+                    var close = $("#check"+tid).is(":checked")?1:0;
+                    var conf = "Are you sure you wish to submit this reply?";                       
+                    bootbox.confirm(conf,function(result){
+                        if(result){
+                            $.ajax({
+                                url:"/support_reply",
+                                type:"POST",
+                                data:{"tid":tid,"reply":body,"close":close},
+                                success:function(data){
+                                    try{
+                                        data = JSON.parse(data);
+                                        if(data.success){
+                                            bootbox.alert(data.msg,function(){
+                                                if(reload){
+                                                   location.reload(); 
+                                               }                                                
+                                            });                     
+                                        }else{
+                                            bootbox.alert(data.error);
+                                        }
+                                    }catch(err){
+                                        bootbox.alert("Javascript error: "+err);
+                                    }
+                                },
+                                error:function(err){
+                                    bootbox.alert("AJAX error: "+err.statusText);
+                                }
+                            });
+                        }
+                    });                                        
+                    return false;
+                });             
+            });			
+		</script>	
+	</head>
+	<body style="margin-bottom: 62px;">
+		<nav class="navbar navbar-default navbar-static-top" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<!-- <a class="navbar-brand" style="padding-top:0px;padding-bottom:0px;padding-right:0px" href="./"><img alt="CSGO.mk" height="34" style="margin-top:8px;margin-bottom:8px;margin-right:5px" src="http://y91036d3.beget.tech/template/img/just.png"></a> -->
+            <a class="navbar-brand" href="/"><div id="logo" class="logo"></div></a>
+		</div>
+		<div id="navbar" class="navbar-collapse collapse">
+		<?php include "Templates/Header.php"; ?>
+		<?php include "Templates/UserPanel.php"; ?>
+		</div>
+	</div>
+</nav>
+<div class="modal fade" id="my64id">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><b>My Steam64Id</b></h4>
+			</div>
+			<div class="modal-body">
+				<b><?=($user)?$user['steamid']:''?></b>			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="settingsModal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><b>Settings</b></h4>
+			</div>
+			<div class="modal-body">
+				<form>	  			        	
+								  
+				  	<div class="checkbox">
+				    	<label>
+				      		<input type="checkbox" id="settings_confirm" checked>
+				      		<strong>Confirm all bets over 10,000 coins</strong>
+				    	</label>
+				  	</div>
+				  	<div class="checkbox">
+				    	<label>
+				      		<input type="checkbox" id="settings_sounds" checked>
+				      		<strong>Enable sounds</strong>
+				    	</label>
+				  	</div>
+				  	<div class="checkbox">
+				    	<label>
+				      		<input type="checkbox" id="settings_dongers">
+				      		<strong>Display in $ amounts</strong>
+				    	</label>
+				  	</div>
+				  	<div class="checkbox">
+				    	<label>
+				      		<input type="checkbox" id="settings_hideme">
+				      		<strong>Hide my profile link in chat</strong>
+				    	</label>
+				  	</div>
+				  	
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-success" onclick="saveSettings()">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php include "Templates/RedeemModal.php"; ?>
+
+<div class="modal fade" id="chatRules">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><b>Chat Rules</b></h4>
+			</div>
+			<div class="modal-body" style="font-size:24px">				  
+				<ol>
+					<li>No Spamming</li>
+					<li>No Begging for Coins</li>
+					<li>No Posting Promo Codes</li>
+					<li>No CAPS LOCK</li>
+					<li>No Promo Codes in Profile Name</li>
+					</ol>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success btn-block" data-dismiss="modal">Got it!</button>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<script>
+function saveSettings(){
+	for(var i=0;i<SETTINGS.length;i++){
+		setCookie("settings_"+SETTINGS[i],$("#settings_"+SETTINGS[i]).is(":checked"));
+	}
+	$("#settingsModal").modal("hide");
+	if($("#settings_dongers").is(":checked")){
+		$("#balance").html("please reload");
+	}else{
+		$("#balance").html("please reload");
+	}
+}
+
+</script>		
+<div class="container">
+	<?php include "Templates/AdminPanel.php"; ?>	
+</div>
+	<?php include "Templates/Agreement.php"; ?>
+	<?php include "Templates/Footer.php"; ?>			
+	
+</body></html>
